@@ -15,6 +15,10 @@ public class Cancion {
         this.idAutor = idAutor;
     }
 
+    public Cancion() {
+
+    }
+
     public ObjectId getId() {
         return id;
     }

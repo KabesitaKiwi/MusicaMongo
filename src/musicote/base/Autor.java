@@ -15,6 +15,10 @@ public class Autor {
         this.edad = edad;
     }
 
+    public Autor() {
+
+    }
+
     public ObjectId getId() {
         return id;
     }

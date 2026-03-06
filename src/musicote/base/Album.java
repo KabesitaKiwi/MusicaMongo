@@ -17,6 +17,10 @@ public class Album {
         this.duracion = duracion;
     }
 
+    public Album() {
+        
+    }
+
     public ObjectId getId() {
         return id;
     }

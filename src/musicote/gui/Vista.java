@@ -11,37 +11,37 @@ import java.time.LocalDate;
 public class Vista extends JFrame {
     private JPanel panelPrincipal;
     // Canciones
-    private JTextField campoTituloCancion;
-    private JList<Cancion> listCancion;
-    private JButton botonAnadirCancion;
-    private JButton botonActualizarCancion;
-    private JButton botonEliminarCancion;
-    private JTextField campoBuscarCancion;
-    private JList<Cancion> listBuscarCancion;
-    private JComboBox comboAlbum;
-    private JComboBox comboAutor;
-    private JSpinner campoDuracion;
+    public JTextField campoTituloCancion;
+    public JList<Cancion> listCancion;
+    public JButton botonAnadirCancion;
+    public JButton botonActualizarCancion;
+    public JButton botonEliminarCancion;
+    public JTextField campoBuscarCancion;
+    public JList<Cancion> listBuscarCancion;
+    public JComboBox comboAlbum;
+    public JComboBox comboAutor;
+    public JSpinner campoDuracion;
 
     // Autores
-    private JTextField campoNombreAutor;
-    private JTextField campoNombreArtistico;
-    private JList<Autor> listArtista;
-    private JButton botonEliminarAutor;
-    private JButton botonAnadirAutor;
-    private JButton botonModificarAutor;
-    private JTextField campoBuscarArtista;
-    private JList<Autor> listBuscarAutor;
+    public JTextField campoNombreAutor;
+    public JTextField campoNombreArtistico;
+    public JList<Autor> listArtista;
+    public JButton botonEliminarAutor;
+    public JButton botonAnadirAutor;
+    public JButton botonModificarAutor;
+    public JTextField campoBuscarArtista;
+    public JList<Autor> listBuscarAutor;
 
     // Álbumes
-    private JSpinner spinner1;
-    private JList<Album> listAlbum;
-    private JButton botonEliminarAlbum;
-    private JButton botonModificarAAlbum;
-    private JTextField campoTituloAlbum;
-    private JTextField campoBuscarAlbum;
-    private JList<Album> listBusquedaAlbum;
-    private JButton botonAnadirAlbum;
-    private DatePicker campoFechaLanzamiento;
+    public JSpinner campoEdad;
+    public JList<Album> listAlbum;
+    public JButton botonEliminarAlbum;
+    public JButton botonModificarAAlbum;
+    public JTextField campoTituloAlbum;
+    public JTextField campoBuscarAlbum;
+    public JList<Album> listBusquedaAlbum;
+    public JButton botonAnadirAlbum;
+    public DatePicker campoFechaLanzamiento;
 
     //modelos
     DefaultListModel<Cancion> dlmCaciones;
@@ -55,7 +55,7 @@ public class Vista extends JFrame {
     JMenuItem itemConectar;
     JMenuItem itemSalir;
 
-    public Vista(){
+    public Vista() {
         setTitle("Autores - <SIN CONEXION>");
         setContentPane(panelPrincipal);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,5 +98,4 @@ public class Vista extends JFrame {
 
         setJMenuBar(menuBar);
     }
-
 }
