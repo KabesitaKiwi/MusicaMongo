@@ -175,7 +175,7 @@ public class Modelo {
             albumes.deleteOne(objectToDocument(album));
         }else if (obj instanceof  Autor){
             Autor autor = (Autor) obj;
-            artistas.deleteOne(objectToDocument(objectToDocument(autor)));
+            artistas.deleteOne(objectToDocument(autor));
         }
     }
 

@@ -2,11 +2,32 @@ package musicote.base;
 
 import org.bson.types.ObjectId;
 
+import java.util.ArrayList;
+
 public class Cancion {
     private ObjectId id;
     private String titulo;
     private ObjectId idAlbum;
     private ObjectId idAutor;
+
+    private Album album;
+    private Autor autor;
+
+    public Album getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(Album album) {
+        this.album = album;
+    }
+
+    public Autor getAutor() {
+        return autor;
+    }
+
+    public void setAutor(Autor autor) {
+        this.autor = autor;
+    }
 
     public Cancion(String titulo, ObjectId idAlbum, ObjectId idAutor) {
         this.titulo = titulo;
@@ -50,13 +71,16 @@ public class Cancion {
         this.idAutor = idAutor;
     }
 
+
     @Override
     public String toString() {
+        String tituloAlbum = (album != null) ? album.getTitulo() : "Sin álbum";
+        String nombreAutor = (autor != null) ? autor.getNombreArtistico() : "Sin autor";
+
         return "Cancion{" +
-                "id=" + id +
-                ", titulo='" + titulo + '\'' +
-                ", idAlbum=" + idAlbum +
-                ", idAutor=" + idAutor +
+                "titulo='" + titulo + '\'' +
+                ", album='" + tituloAlbum + '\'' +
+                ", autor='" + nombreAutor + '\'' +
                 '}';
     }
 }

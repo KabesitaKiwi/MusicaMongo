@@ -8,8 +8,8 @@ public class Autor {
     private String nombreArtistico;
     private int edad;
 
-    public Autor(ObjectId id, String nombreReal, String nombreArtistico, int edad) {
-        this.id = id;
+    public Autor(String nombreReal, String nombreArtistico, int edad) {
+
         this.nombreReal = nombreReal;
         this.nombreArtistico = nombreArtistico;
         this.edad = edad;
@@ -53,8 +53,7 @@ public class Autor {
 
     @Override
     public String toString() {
-        return "Autor{" +
-                "id=" + id +
+        return "Autor" +
                 ", nombreReal='" + nombreReal + '\'' +
                 ", nombreArtistico='" + nombreArtistico + '\'' +
                 ", edad=" + edad +

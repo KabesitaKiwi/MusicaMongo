@@ -8,17 +8,16 @@ public class Album {
     private ObjectId id;
     private String titulo;
     private LocalDate fechaEstreno;
-    private float duracion;
+    private double duracion;
 
-    public Album(ObjectId id, String titulo, LocalDate fechaEstreno, float duracion) {
-        this.id = id;
+    public Album(  String titulo, LocalDate fechaEstreno, double duracion) {
         this.titulo = titulo;
         this.fechaEstreno = fechaEstreno;
         this.duracion = duracion;
     }
 
     public Album() {
-        
+
     }
 
     public ObjectId getId() {
@@ -45,18 +44,17 @@ public class Album {
         this.fechaEstreno = fechaEstreno;
     }
 
-    public float getDuracion() {
+    public double getDuracion() {
         return duracion;
     }
 
-    public void setDuracion(float duracion) {
+    public void setDuracion(double duracion) {
         this.duracion = duracion;
     }
 
     @Override
     public String toString() {
-        return "Album{" +
-                "id=" + id +
+        return "Album{"+
                 ", titulo='" + titulo + '\'' +
                 ", fechaEstreno=" + fechaEstreno +
                 ", duracion=" + duracion +

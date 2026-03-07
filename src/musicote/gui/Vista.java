@@ -17,7 +17,6 @@ public class Vista extends JFrame {
     public JButton botonActualizarCancion;
     public JButton botonEliminarCancion;
     public JTextField campoBuscarCancion;
-    public JList<Cancion> listBuscarCancion;
     public JComboBox comboAlbum;
     public JComboBox comboAutor;
     public JSpinner campoDuracion;
@@ -39,17 +38,14 @@ public class Vista extends JFrame {
     public JButton botonModificarAAlbum;
     public JTextField campoTituloAlbum;
     public JTextField campoBuscarAlbum;
-    public JList<Album> listBusquedaAlbum;
     public JButton botonAnadirAlbum;
     public DatePicker campoFechaLanzamiento;
 
     //modelos
     DefaultListModel<Cancion> dlmCaciones;
-    DefaultListModel<Cancion> dlmBuscarCanciones;
     DefaultListModel<Autor> dlmAutor;
     DefaultListModel<Autor> dlmBuscarAutor;
     DefaultListModel<Album> dlmAlbum;
-    DefaultListModel<Album> dlmBuscarAlbum;
 
     //menu
     JMenuItem itemConectar;
@@ -58,14 +54,19 @@ public class Vista extends JFrame {
     public Vista() {
         setTitle("Autores - <SIN CONEXION>");
         setContentPane(panelPrincipal);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(800, 650));
-        setResizable(false);
-        pack();
-        setVisible(true);
 
         inicializarModelos();
         inicializarMenu();
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(800, 650));
+        setResizable(false);
+
+        pack();
+
+        setVisible(true);
+
+
     }
 
     private void inicializarModelos() {
@@ -75,12 +76,8 @@ public class Vista extends JFrame {
         listArtista.setModel(dlmAutor);
         dlmAlbum = new DefaultListModel<>();
         listAlbum.setModel(dlmAlbum);
-        dlmBuscarCanciones = new DefaultListModel<>();
-        listBuscarCancion.setModel(dlmBuscarCanciones);
         dlmBuscarAutor = new DefaultListModel<>();
         listBuscarAutor.setModel(dlmBuscarAutor);
-        dlmBuscarAlbum = new DefaultListModel<>();
-        listBusquedaAlbum.setModel(dlmBuscarAlbum);
     }
 
     private void inicializarMenu() {

@@ -4,6 +4,7 @@ import musicote.base.Album;
 import musicote.base.Autor;
 import musicote.base.Cancion;
 import musicote.util.Util;
+import org.bson.types.ObjectId;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -12,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 public class Controlador implements ActionListener, KeyListener, ListSelectionListener {
     private Modelo modelo;
@@ -30,12 +32,14 @@ public class Controlador implements ActionListener, KeyListener, ListSelectionLi
             vista.itemConectar.setText("Desconectar");
             vista.setTitle("Musica - <CONECTADO>");
             setBotonesActivados(true);
+
             listarAlbumes();
             listarAutores();
-            listarCanciones();
-
             listarComboAlbum();
             listarComboAutor();
+            listarCanciones();
+
+            vista.listCancion.updateUI();
         } catch (Exception ex) {
             ex.printStackTrace();
             Util.mostrarMensajeError("Imposible establecer conexión con el servidor.");
@@ -88,7 +92,24 @@ public class Controlador implements ActionListener, KeyListener, ListSelectionLi
             case "delCancion":
                 eliminarCancion();
                 break;
-
+            case "addAlbum":
+                anadirAlbum();
+                break;
+            case "modAlbum":
+                modificarAlbum();
+                break;
+            case "delAlbum":
+                eliminarAlbum();
+                break;
+            case"addAutor":
+                anadirAutor();
+                break;
+            case "modAutor":
+                modificarAutor();
+                break;
+            case "delAutor":
+                eliminarAutor();
+                break;
         }
     }
 
@@ -103,13 +124,56 @@ public class Controlador implements ActionListener, KeyListener, ListSelectionLi
     }
 
     @Override
-    public void keyReleased(KeyEvent keyEvent) {
-
+    public void keyReleased(KeyEvent e) {
+        if (e.getSource() == vista.campoBuscarArtista) {
+            if (vista.campoBuscarArtista.getText().isEmpty()) {
+                vista.dlmBuscarAutor.clear();
+            } else {
+                listarAutoresBusqueda(modelo.getAutor(vista.campoBuscarArtista.getText()));
+            }
+        }
     }
 
     @Override
-    public void valueChanged(ListSelectionEvent listSelectionEvent) {
+    public void valueChanged(ListSelectionEvent e) {
+        if (e.getSource() == vista.listCancion) {
+            if (vista.listCancion.getSelectedValue() != null) {
+                Cancion cancion = vista.listCancion.getSelectedValue();
+                vista.campoTituloCancion.setText(cancion.getTitulo());
 
+                for (int i = 0; i < vista.comboAlbum.getItemCount(); i++) {
+                    AlbumItem item = (AlbumItem) vista.comboAlbum.getItemAt(i);
+                    if (item.getAlbum().getId().equals(cancion.getIdAlbum())) {
+                        vista.comboAlbum.setSelectedIndex(i);
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < vista.comboAutor.getItemCount(); i++) {
+                    ArtistaItem item = (ArtistaItem) vista.comboAutor.getItemAt(i);
+                    if (item.getArtista().getId().equals(cancion.getIdAutor())) {
+                        vista.comboAutor.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            }
+
+        } else if (e.getSource() == vista.listAlbum) {
+            if (vista.listAlbum.getSelectedValue() != null) {
+                Album album = vista.listAlbum.getSelectedValue();
+                vista.campoTituloAlbum.setText(album.getTitulo());
+                vista.campoFechaLanzamiento.setDate(album.getFechaEstreno());
+                vista.campoDuracion.setValue(album.getDuracion());
+            }
+
+        } else if (e.getSource() == vista.listArtista) {
+            if (vista.listArtista.getSelectedValue() != null) {
+                Autor autor = vista.listArtista.getSelectedValue();
+                vista.campoNombreAutor.setText(autor.getNombreReal());
+                vista.campoNombreArtistico.setText(autor.getNombreArtistico());
+                vista.campoEdad.setValue(autor.getEdad());
+            }
+        }
     }
 
     private void addActionListeners(ActionListener listener){
@@ -129,9 +193,7 @@ public class Controlador implements ActionListener, KeyListener, ListSelectionLi
     }
 
     private void addKeyListeners(KeyListener listener){
-        vista.campoBuscarAlbum.addKeyListener(listener);
         vista.campoBuscarArtista.addKeyListener(listener);
-        vista.campoBuscarCancion.addKeyListener(listener);
     }
 
     private void addListSelectionListeners(Controlador listener) {
@@ -161,7 +223,25 @@ public class Controlador implements ActionListener, KeyListener, ListSelectionLi
 
     private void listarCanciones() {
         vista.dlmCaciones.clear();
+
         for (Cancion cancion : modelo.getCancion()) {
+            cancion.setAutor(null);
+            cancion.setAlbum(null);
+
+            for (Album album : modelo.getAlbum()) {
+                if (album.getId().equals(cancion.getIdAlbum())) {
+                    cancion.setAlbum(album);
+                    break;
+                }
+            }
+
+            for (Autor autor : modelo.getAutor()) {
+                if (autor.getId().equals(cancion.getIdAutor())) {
+                    cancion.setAutor(autor);
+                    break;
+                }
+            }
+
             vista.dlmCaciones.addElement(cancion);
         }
     }
@@ -175,14 +255,12 @@ public class Controlador implements ActionListener, KeyListener, ListSelectionLi
 
     private void limpiarCamposCanciones(){
         vista.campoTituloCancion.setText("");
-        vista.campoBuscarCancion.setText("");
         vista.comboAlbum.setSelectedIndex(0);
         vista.comboAutor.setSelectedIndex(0);
     }
 
     private void limpiarCamposAlbumes(){
         vista.campoTituloAlbum.setText("");
-        vista.campoBuscarAlbum.setText("");
         vista.campoDuracion.setValue(1);
         vista.campoFechaLanzamiento.setText("");
     }
@@ -194,23 +272,28 @@ public class Controlador implements ActionListener, KeyListener, ListSelectionLi
     }
 
     public void anadirCancion(){
-        if (Util.comprobarCampoVacio(vista.campoTituloCancion)){
+        if (!Util.comprobarCampoVacio(vista.campoTituloCancion)){
             Util.lanzaAlertaVacio(vista.campoTituloCancion);
         }else {
             AlbumItem idAlbum = (AlbumItem) vista.comboAlbum.getSelectedItem();
             ArtistaItem idAutor = (ArtistaItem) vista.comboAutor.getSelectedItem();
-            modelo.guardarObjeto(new Cancion(
+            Cancion cancion = new Cancion(
                     vista.campoTituloCancion.getText(),
                     idAlbum.getAlbum().getId(),
                     idAutor.getArtista().getId()
-                    ));
+                    );
+
+            cancion.setAlbum(idAlbum.getAlbum());
+            cancion.setAutor(idAutor.getArtista());
+
+            modelo.guardarObjeto(cancion);
             limpiarCamposCanciones();
         }
         listarCanciones();
     }
 
     public void modificarCancion(){
-        if (Util.comprobarCampoVacio(vista.campoTituloCancion)){
+        if (!Util.comprobarCampoVacio(vista.campoTituloCancion)){
             Util.lanzaAlertaVacio(vista.campoTituloCancion);
         }else {
             AlbumItem idAlbum = (AlbumItem) vista.comboAlbum.getSelectedItem();
@@ -219,6 +302,9 @@ public class Controlador implements ActionListener, KeyListener, ListSelectionLi
             cancion.setTitulo(vista.campoTituloCancion.getText());
             cancion.setIdAlbum(idAlbum.getAlbum().getId());
             cancion.setIdAutor(idAutor.getArtista().getId());
+
+            cancion.setAlbum(idAlbum.getAlbum());
+            cancion.setAutor(idAutor.getArtista());
 
             modelo.modificarObjeto(cancion);
             limpiarCamposCanciones();
@@ -235,6 +321,114 @@ public class Controlador implements ActionListener, KeyListener, ListSelectionLi
             JOptionPane.showMessageDialog(null, "No hay ningun elemento seleccionado");
         }
     }
+
+    public void anadirAutor(){
+        if (!Util.comprobarCampoVacio(vista.campoNombreAutor)){
+            Util.lanzaAlertaVacio(vista.campoNombreAutor);
+        } else if (!Util.comprobarCampoVacio(vista.campoNombreArtistico)){
+            Util.lanzaAlertaVacio(vista.campoNombreArtistico);
+        } else {
+            Autor autor = new Autor(
+                    vista.campoNombreAutor.getText(),
+                    vista.campoNombreArtistico.getText(),
+                    (int) vista.campoEdad.getValue()
+            );
+
+            modelo.guardarObjeto(autor);
+            limpiarCamposArtistas();
+        }
+
+        listarAutores();
+        listarComboAutor();
+    }
+
+    public void modificarAutor(){
+        if (!Util.comprobarCampoVacio(vista.campoNombreAutor)){
+            Util.lanzaAlertaVacio(vista.campoNombreAutor);
+        } else if (!Util.comprobarCampoVacio(vista.campoNombreArtistico)){
+            Util.lanzaAlertaVacio(vista.campoNombreArtistico);
+        } else {
+            Autor autor = vista.listArtista.getSelectedValue();
+
+            if (autor != null) {
+                autor.setNombreReal(vista.campoNombreAutor.getText());
+                autor.setNombreArtistico(vista.campoNombreArtistico.getText());
+                autor.setEdad((int) vista.campoEdad.getValue());
+
+                modelo.modificarObjeto(autor);
+                limpiarCamposArtistas();
+            } else {
+                JOptionPane.showMessageDialog(null, "No hay ningun autor seleccionado");
+            }
+        }
+
+        listarAutores();
+        listarComboAutor();
+    }
+
+    public void eliminarAutor(){
+        if (vista.listArtista.getSelectedValue() != null){
+            modelo.eliminarObjeto(vista.listArtista.getSelectedValue());
+            listarAutores();
+            listarComboAutor();
+            limpiarCamposArtistas();
+        } else {
+            JOptionPane.showMessageDialog(null, "No hay ningun autor seleccionado");
+        }
+    }
+
+    public void anadirAlbum(){
+        if (!Util.comprobarCampoVacio(vista.campoTituloAlbum)){
+            Util.lanzaAlertaVacio(vista.campoTituloAlbum);
+        } else {
+            Album album = new Album(
+                    vista.campoTituloAlbum.getText(),
+                    vista.campoFechaLanzamiento.getDate(),
+                    Double.parseDouble(vista.campoDuracion.getValue().toString())
+            );
+
+            modelo.guardarObjeto(album);
+            limpiarCamposAlbumes();
+        }
+
+        listarAlbumes();
+        listarComboAlbum();
+    }
+
+    public void modificarAlbum(){
+        if (!Util.comprobarCampoVacio(vista.campoTituloAlbum)){
+            Util.lanzaAlertaVacio(vista.campoTituloAlbum);
+        } else {
+            Album album = vista.listAlbum.getSelectedValue();
+
+            if (album != null) {
+                album.setTitulo(vista.campoTituloAlbum.getText());
+                album.setFechaEstreno(vista.campoFechaLanzamiento.getDate());
+                album.setDuracion(Double.parseDouble(vista.campoDuracion.getValue().toString()));
+
+                modelo.modificarObjeto(album);
+                limpiarCamposAlbumes();
+            } else {
+                JOptionPane.showMessageDialog(null, "No hay ningun album seleccionado");
+            }
+        }
+
+        listarAlbumes();
+        listarComboAlbum();
+    }
+
+    public void eliminarAlbum(){
+        if (vista.listAlbum.getSelectedValue() != null){
+            modelo.eliminarObjeto(vista.listAlbum.getSelectedValue());
+            listarAlbumes();
+            listarComboAlbum();
+            limpiarCamposAlbumes();
+        } else {
+            JOptionPane.showMessageDialog(null, "No hay ningun album seleccionado");
+        }
+    }
+
+
 
     public class AlbumItem {
         private Album album;
@@ -285,5 +479,22 @@ public class Controlador implements ActionListener, KeyListener, ListSelectionLi
             vista.comboAutor.addItem(new ArtistaItem(autor));
         }
     }
+
+
+    private void listarAutoresBusqueda(ArrayList<Autor> lista) {
+        vista.dlmBuscarAutor.clear();
+
+        if (lista == null) return;
+
+        for (Autor autor : lista) {
+            if (autor != null) {
+                vista.dlmBuscarAutor.addElement(autor);
+            }
+        }
+    }
+
+
+
+
 
 }
