@@ -98,4 +98,6 @@ public class Vista extends JFrame {
 
         setJMenuBar(menuBar);
     }
+
+
 }

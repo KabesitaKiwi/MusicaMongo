@@ -8,8 +8,7 @@ public class Cancion {
     private ObjectId idAlbum;
     private ObjectId idAutor;
 
-    public Cancion(ObjectId id, String titulo, ObjectId idAlbum, ObjectId idAutor) {
-        this.id = id;
+    public Cancion(String titulo, ObjectId idAlbum, ObjectId idAutor) {
         this.titulo = titulo;
         this.idAlbum = idAlbum;
         this.idAutor = idAutor;
