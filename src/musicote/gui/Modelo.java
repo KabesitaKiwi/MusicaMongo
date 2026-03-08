@@ -34,8 +34,11 @@ public class Modelo {
     }
 
     public void desconectar(){
-        cliente.close();
+        if (cliente != null) {
+            cliente.close();
+        }
         cliente = null;
+
     }
 
     public MongoClient getCliente() {
